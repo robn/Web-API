@@ -265,6 +265,19 @@ has 'auth_type' => (
     default => sub { 'none' },
 );
 
+=head2 oauth_type
+
+get/set OAuth request type. supported are 'protected' for standard protected resource requests, 'consumer' for "two-legged" consumer requests.
+
+default: protected
+
+=cut
+
+has 'oauth_type' => (
+    is      => 'rw',
+    isa     => Str,
+    default => sub { 'protected' },
+);
 =head2 default_method (optional)
 
 get/set default HTTP method
@@ -657,6 +670,9 @@ sub talk {
                 signature_method => $self->signature_method,
                 timestamp        => time,
                 nonce            => $self->nonce,
+            );
+
+            my %access_opts = (
                 token            => $self->access_token,
                 token_secret     => $self->access_secret,
             );
@@ -669,7 +685,9 @@ sub talk {
                 $opts{extra_params} = $options;
             }
 
-            $oauth_req = Net::OAuth->request("protected resource")->new(%opts);
+            $oauth_req = $self->oauth_type eq 'consumer' ?
+                Net::OAuth->request("consumer")->new(%opts) :
+                Net::OAuth->request("protected resource")->new(%opts, %access_opts);
             $oauth_req->sign;
         }
         default {

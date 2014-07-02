@@ -179,6 +179,12 @@ get/set authentication type. currently supported are only 'basic', 'hash_key', '
 
 default: none
 
+=head2 oauth_type
+
+get/set OAuth request type. supported are 'protected' for standard protected resource requests, 'consumer' for "two-legged" consumer requests.
+
+default: protected
+
 =head2 default_method (optional)
 
 get/set default HTTP method
